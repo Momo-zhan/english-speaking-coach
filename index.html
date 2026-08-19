@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="English Coach">
+<meta name="theme-color" content="#0B1F3A">
+<meta name="robots" content="noindex, nofollow">
+<title>English Speaking Coach — AI SW PM</title>
+<style>
+:root{ color-scheme: light; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#EEF1F6}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei","PingFang TC",Roboto,sans-serif;padding:14px}
+.console{
+  --cy:#38D9E8; --glow:rgba(56,217,232,.42);
+  --red:#FA574F; --silver:#8FA0C2; --line:rgba(143,160,194,.18); --white:#F4F6FB;
+  --grn:#5BD98A; --yel:#FFD166;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(56,217,232,.11), transparent 42%),
+    radial-gradient(circle at 88% 82%, rgba(250,87,79,.07), transparent 45%),
+    linear-gradient(160deg,#050D1A 0%,#0B1F3A 50%,#0E2142 100%);
+  color:var(--white);border-radius:14px;padding:26px 28px 34px;
+  box-shadow:0 12px 40px rgba(11,31,58,.28)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;
+  border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px;flex-wrap:wrap}
+h1{font-weight:700;font-size:25px;letter-spacing:.6px;display:flex;align-items:center;gap:10px}
+h1 .bolt{color:var(--cy);text-shadow:0 0 18px var(--glow)}
+.meta{font-size:12px;color:var(--silver);line-height:1.75;text-align:right}
+.meta b{color:var(--white)}
+
+/* ---- 每日一句 ---- */
+.quote{background:linear-gradient(120deg,rgba(56,217,232,.11),rgba(19,42,77,.55) 55%);
+  border:1px solid rgba(56,217,232,.30);border-left:3px solid var(--cy);
+  border-radius:11px;padding:19px 24px;margin-bottom:22px;position:relative;overflow:hidden}
+.quote::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(240px 120px at 100% 0%,rgba(56,217,232,.10),transparent 70%)}
+.quote .ql{font-size:10.5px;letter-spacing:1.4px;color:var(--cy);font-weight:700;margin-bottom:9px;text-transform:uppercase}
+.quote .qe{font-size:20px;font-weight:600;line-height:1.45;letter-spacing:.2px}
+.quote .qz{font-size:13.5px;color:var(--silver);margin-top:8px;line-height:1.6}
+
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.card{background:linear-gradient(160deg,rgba(19,42,77,.92),rgba(11,31,58,.92));
+  border:1px solid var(--line);border-left:3px solid var(--cy);
+  border-radius:10px;padding:15px 18px;position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;inset:0;border-radius:10px;pointer-events:none;
+  background:radial-gradient(130px 80px at 100% 0%,rgba(56,217,232,.12),transparent 70%)}
+.card .lbl{font-size:11.5px;color:var(--silver);font-weight:600;margin-bottom:8px}
+.card .val{font-size:29px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.card .val.cy{color:var(--cy);text-shadow:0 0 14px var(--glow)}
+.card .val.sm{font-size:17px;line-height:1.3}
+.card .unit{font-size:12.5px;color:var(--silver);font-weight:500;margin-left:4px}
+
+.pbar-wrap{margin-bottom:26px}
+.pbar-hdr{display:flex;justify-content:space-between;font-size:12px;color:var(--silver);margin-bottom:7px}
+.pbar-hdr b{color:var(--white);font-size:13px}
+.pbar{width:100%;height:19px;border-radius:10px;background:rgba(143,160,194,.12);
+  border:1px solid var(--line);overflow:hidden}
+.pfill{height:100%;border-radius:10px;background:linear-gradient(90deg,#38D9E8,#8FE9F3);box-shadow:0 0 16px var(--glow);transition:width .5s ease}
+
+.sect{font-weight:700;font-size:16px;letter-spacing:.4px;margin:26px 0 12px;display:flex;align-items:center;gap:9px}
+.sect .bar{width:4px;height:16px;background:var(--cy);border-radius:2px;box-shadow:0 0 10px var(--glow)}
+.grid2{display:grid;grid-template-columns:1fr 1.15fr;gap:16px;align-items:start}
+.panel{background:rgba(19,42,77,.55);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+.panel .pt{font-size:12px;color:var(--silver);font-weight:600;margin-bottom:11px}
+
+/* ---- 主題涵蓋度 ---- */
+.cov{display:flex;flex-direction:column;gap:12px}
+.covrow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.covrow .cn{font-size:12.5px;font-weight:600}
+.covrow .cn small{color:var(--silver);font-weight:500;margin-left:6px;font-size:11px}
+.covrow .cc{font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--silver);font-weight:600}
+.covrow .cbar{grid-column:1/3;height:7px;border-radius:4px;background:rgba(143,160,194,.14);overflow:hidden}
+.covrow .cbar i{display:block;height:100%;background:var(--cy);border-radius:4px;transition:width .5s ease}
+.covrow.weak .cbar i{background:var(--yel)}
+.covrow.zero .cbar i{background:var(--red)}
+
+/* ---- 本週規劃 ---- */
+.week{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+.day{background:rgba(19,42,77,.62);border:1px solid var(--line);border-radius:10px;
+  padding:13px 14px;display:flex;flex-direction:column;gap:8px;min-height:132px;
+  transition:all .16s ease;font-family:inherit;text-align:left;color:inherit}
+.day.has{cursor:pointer}
+.day.has:hover{border-color:rgba(56,217,232,.5);background:rgba(19,42,77,.9);transform:translateY(-2px)}
+.day.today{border-color:var(--cy);box-shadow:0 0 18px rgba(56,217,232,.18)}
+.day .dw{font-size:10.5px;letter-spacing:1.1px;color:var(--silver);font-weight:700;text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;gap:6px}
+.day.today .dw{color:var(--cy)}
+.day .dt{font-size:13px;font-weight:600;line-height:1.4;flex:1}
+.day .dz{font-size:11px;color:var(--silver);line-height:1.5}
+.day .dstat{font-size:10.5px;font-weight:700}
+.day .dstat.ok{color:var(--grn)}
+.day .dstat.rdy{color:var(--cy)}
+.day .dstat.non{color:rgba(143,160,194,.55)}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:rgba(5,13,26,.7);color:var(--silver);font-weight:600;text-align:left;
+  padding:9px 10px;font-size:11px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(56,217,232,.06)}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.b-ok{background:rgba(91,217,138,.16);color:#7DE8A6;border:1px solid rgba(91,217,138,.45)}
+.b-new{background:rgba(56,217,232,.14);color:#8FE9F3;border:1px solid rgba(56,217,232,.45)}
+.rbtn{cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;white-space:nowrap;
+  background:rgba(56,217,232,.10);border:1px solid rgba(56,217,232,.42);color:#8FE9F3;
+  padding:5px 11px;border-radius:6px;transition:all .16s ease}
+.rbtn:hover{background:rgba(56,217,232,.24);color:#fff;box-shadow:0 0 14px rgba(56,217,232,.3)}
+.empty{color:var(--silver);font-size:12.5px;padding:22px 4px;text-align:center;line-height:1.8}
+footer{margin-top:30px;padding-top:15px;border-top:1px solid var(--line);font-size:11px;color:var(--silver);line-height:1.8}
+
+/* ---- modal ---- */
+.ov{position:fixed;inset:0;background:rgba(3,8,18,.82);backdrop-filter:blur(3px);
+  display:none;align-items:flex-start;justify-content:center;z-index:99;padding:26px 18px;overflow-y:auto}
+.ov.on{display:flex}
+.mw{--cy:#38D9E8;--silver:#8FA0C2;--line:rgba(143,160,194,.18);--white:#F4F6FB;
+  width:100%;max-width:940px;color:var(--white);
+  background:linear-gradient(160deg,#071527 0%,#0B1F3A 55%,#0E2142 100%);
+  border:1px solid rgba(143,160,194,.26);border-radius:14px;
+  box-shadow:0 24px 70px rgba(0,0,0,.6);overflow:hidden;margin:auto}
+.mh{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  padding:19px 24px;border-bottom:1px solid var(--line);background:rgba(5,13,26,.5);
+  position:sticky;top:0;z-index:2;backdrop-filter:blur(6px)}
+.mh h3{font-size:19px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.mh .sub{font-size:11.5px;color:var(--silver);margin-top:6px}
+.chip{display:inline-block;background:rgba(56,217,232,.15);border:1px solid rgba(56,217,232,.45);
+  color:#8FE9F3;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.xbtn{cursor:pointer;background:rgba(143,160,194,.10);border:1px solid var(--line);
+  color:var(--silver);font-size:19px;line-height:1;padding:5px 12px;border-radius:7px;font-family:inherit}
+.xbtn:hover{background:rgba(250,87,79,.2);color:#fff;border-color:rgba(250,87,79,.5)}
+.mb{padding:20px 24px 26px;font-size:14px;line-height:1.7}
+.mb .lead{color:#C9D4E8;font-size:13.5px;margin-bottom:6px}
+.msect{font-size:12px;font-weight:700;color:var(--silver);letter-spacing:.5px;
+  margin:26px 0 10px;display:flex;align-items:center;gap:8px;text-transform:uppercase}
+.msect:first-child{margin-top:0}
+.msect .b2{width:3px;height:13px;background:var(--cy);border-radius:2px}
+.msect .min{font-weight:600;color:rgba(143,160,194,.7);letter-spacing:.3px}
+.ptbl{width:100%;border-collapse:collapse;font-size:13px}
+.ptbl th{background:rgba(5,13,26,.7);font-size:10.5px}
+.ptbl td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.6}
+.ptbl td.en{width:29%;font-weight:600}
+.ptbl td.gl{width:27%;color:var(--silver);font-size:12.5px}
+.ptbl td.ex{color:#C9D4E8;font-style:italic;font-size:12.5px}
+.ptbl tr.fix td{background:rgba(255,209,102,.07)}
+.tag{display:inline-block;font-style:normal;font-size:10px;background:rgba(255,209,102,.18);
+  color:#FFDD8A;border:1px solid rgba(255,209,102,.4);padding:1px 6px;border-radius:3px;margin-left:5px;font-weight:700}
+.why{font-size:11.5px;color:#FFDD8A;font-weight:500;display:block;margin-top:3px}
+.setup{background:rgba(19,42,77,.7);border:1px solid var(--line);border-left:3px solid var(--cy);
+  padding:14px 17px;border-radius:8px;margin-bottom:20px;font-size:13.5px;line-height:1.75}
+.prompt{margin-bottom:22px}
+.prompt>.q{margin-bottom:9px;line-height:1.65}
+.qnum{font-weight:700;color:var(--cy)}
+.frame{background:rgba(5,13,26,.55);border:1px solid var(--line);border-radius:7px;
+  padding:9px 13px;font-size:12.5px;color:#C9D4E8;margin:7px 0}
+.say{font-size:12px;color:#FFDD8A;margin:7px 0 9px}
+details{background:rgba(56,217,232,.06);border:1px solid rgba(56,217,232,.24);border-radius:7px;padding:9px 13px}
+details summary{cursor:pointer;font-size:12.5px;font-weight:700;color:#8FE9F3;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"\25B8 ";display:inline-block;transition:transform .15s ease}
+details[open] summary::before{content:"\25BE "}
+details p{margin-top:11px;font-size:13.5px;line-height:1.75;color:#E4EAF5}
+ol.fixes{padding-left:20px}
+ol.fixes>li{margin-bottom:17px;line-height:1.7}
+ol.fixes>li::marker{color:var(--cy);font-weight:700}
+.bad{font-style:italic;color:#FF9C95}
+.good{font-weight:600;color:#7DE8A6;display:block;margin-top:3px}
+.note{font-size:12px;color:var(--silver);display:block;margin-top:4px;line-height:1.65}
+.challenge{background:rgba(19,42,77,.7);border:1px solid var(--line);border-radius:8px;padding:15px 17px;font-size:13.5px;line-height:1.75}
+.challenge ul{margin:9px 0 0;padding-left:20px}
+.challenge li{margin:6px 0}
+.check{background:rgba(5,13,26,.5);border:1px solid var(--line);border-radius:8px;padding:14px 17px 14px 36px;font-size:13.5px}
+.check li{margin:8px 0;line-height:1.65}
+.mf{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+  margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.donebtn{cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;
+  background:rgba(91,217,138,.13);border:1px solid rgba(91,217,138,.45);color:#7DE8A6;
+  padding:9px 18px;border-radius:8px;transition:all .16s ease}
+.donebtn:hover{background:rgba(91,217,138,.26);color:#fff}
+.donebtn.on{background:rgba(91,217,138,.3);color:#fff;border-color:#5BD98A}
+.mfnote{font-size:11.5px;color:var(--silver)}
+@media(max-width:1000px){.grid2{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}
+  .week{grid-template-columns:repeat(2,1fr)}}
+
+/* ---- mobile ---- */
+@media(max-width:620px){ #libTable td.hide-sm{display:none} }
+@media(max-width:620px){
+  body{padding:8px}
+  .console{padding:18px 15px 26px;border-radius:12px}
+  header{flex-direction:column;align-items:flex-start;gap:10px}
+  h1{font-size:19px;letter-spacing:.3px}
+  .meta{text-align:left;font-size:11px}
+  .quote{padding:16px 17px}
+  .quote .qe{font-size:17px}
+  .quote .qz{font-size:12.5px}
+  .cards{grid-template-columns:repeat(2,1fr);gap:10px}
+  .card{padding:12px 13px}
+  .card .val{font-size:23px}
+  .card .val.sm{font-size:14px}
+  .sect{font-size:14.5px;margin:22px 0 10px}
+  .grid2{gap:14px}
+  .panel{padding:13px 14px}
+  .week{grid-template-columns:1fr;gap:9px}
+  .day{min-height:0;flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:11px 13px}
+  .day .dw{width:100%;order:1}
+  .day .dt{flex:0 0 auto;order:2;font-size:13.5px}
+  .day .dz{display:none}
+  .day .dstat{order:3;margin-left:auto}
+  /* library table -> stacked cards */
+  #libTable thead{display:none}
+  #libTable,#libTable tbody,#libTable tr,#libTable td{display:block;width:100%}
+  #libTable tr{border-bottom:1px solid var(--line);padding:11px 13px;position:relative}
+  #libTable tr:last-child{border-bottom:none}
+  #libTable td{border:none;padding:2px 0}
+  #libTable td:first-child{display:none}
+  #libTable td[data-l]::before{content:attr(data-l) "　";color:var(--silver);font-size:11px}
+  /* modal */
+  .ov{padding:0}
+  .mw{border-radius:0;min-height:100%;max-width:none}
+  .mh{padding:14px 16px}
+  .mh h3{font-size:16px}
+  .mb{padding:16px 16px 30px;font-size:14.5px}
+  .ptbl,.ptbl tbody,.ptbl tr,.ptbl td{display:block;width:100%}
+  .ptbl thead{display:none}
+  .ptbl tr{border-bottom:1px solid var(--line);padding:11px 0}
+  .ptbl tr:last-child{border-bottom:none}
+  .ptbl tr.fix{background:rgba(255,209,102,.07);border-radius:7px;padding:11px 11px;margin:6px 0}
+  .ptbl td{border:none;padding:3px 0;width:auto!important}
+  .ptbl td.en{font-size:14.5px}
+  .ptbl td.gl,.ptbl td.ex{font-size:13px}
+  .setup,.challenge,.check{padding:13px 14px;font-size:13.5px}
+  .check{padding-left:32px}
+  details p{font-size:14px}
+  .mf{flex-direction:column;align-items:stretch}
+  .donebtn{width:100%;padding:13px}
+}
+</style>
+</head>
+<body>
+<h2 class="sr-only">英文會議口說訓練儀表板：每日一句、累計完成堂數、五大主題涵蓋度、本週規劃與教材庫。</h2>
+<div class="console">
+
+<header>
+  <h1><span class="bolt">&#9889;</span> ENGLISH SPEAKING COACH</h1>
+  <div class="meta">
+    Focus: <b>Speaking in meetings</b>　|　Cadence: <b>30 min / weekday 08:00</b><br>
+    Started: <b>2026-08-03</b>　|　Target: <b>60 lessons (12 weeks)</b><br>
+    Learner: <b>Momo</b> · AI SW PM
+  </div>
+</header>
+
+<div class="quote">
+  <div class="ql">&#9733; 每日一句 · Daily Fuel</div>
+  <div class="qe" id="qEn">–</div>
+  <div class="qz" id="qZh">–</div>
+</div>
+
+<div class="cards">
+  <div class="card"><div class="lbl">&#9989; 已完成堂數</div><div class="val cy" id="kDone">–</div></div>
+  <div class="card"><div class="lbl">&#128218; 教材庫總堂數</div><div class="val" id="kTotal">–</div></div>
+  <div class="card"><div class="lbl">&#128200; 目標達成率</div><div class="val" id="kPct">–</div></div>
+  <div class="card"><div class="lbl">&#128197; 今日主題</div><div class="val sm" id="kToday">–</div></div>
+</div>
+
+<div class="pbar-wrap">
+  <div class="pbar-hdr"><span>整體進度（目標 60 堂）</span><b id="pTxt">–</b></div>
+  <div class="pbar"><div class="pfill" id="pFill" style="width:0%"></div></div>
+</div>
+
+<div class="grid2">
+  <div>
+    <div class="sect"><span class="bar"></span>五大主題涵蓋度</div>
+    <div class="panel">
+      <div class="pt">每個主題已完成幾堂 —— 紅色代表還沒碰過，黃色代表偏少</div>
+      <div class="cov" id="cov"></div>
+    </div>
+  </div>
+  <div>
+    <div class="sect"><span class="bar"></span>本週規劃</div>
+    <div class="panel">
+      <div class="pt" id="weekPt">點任一天開啟該堂教材</div>
+      <div class="week" id="week"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sect"><span class="bar"></span>教材庫</div>
+<div class="panel" style="padding:0;overflow:hidden">
+  <table id="libTable">
+    <thead><tr>
+      <th>No.</th><th>日期</th><th>星期</th><th>主題</th><th>重點</th><th>狀態</th><th></th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="empty" id="libEmpty" style="display:none">教材庫還是空的 —— 明天早上 08:00 會自動產生第一堂。</div>
+</div>
+
+<footer>
+  說明：每個上班日早上 08:00，排程任務 <b>daily-english-meeting-speaking</b> 會自動產生一堂 30 分鐘教材並追加到本 Dashboard。
+  五天一個循環：週一站會回報、週二解釋技術決策、週三反對與協商、週四升級與壞消息、週五主持會議。
+  「已完成」由你自己在教材頁面底部按下標記，狀態存在本機瀏覽器；重新整理不會遺失。
+  每日一句依日期輪替，不重複。
+  <br><br>
+  <span style="color:#F4F6FB;font-weight:600">Learner：Momo · AI Software PM</span>
+</footer>
+
+</div>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="mw">
+    <div class="mh">
+      <div>
+        <h3 id="mTitle">–</h3>
+        <div class="sub" id="mSub">–</div>
+      </div>
+      <button class="xbtn" id="xbtn" aria-label="關閉">&times;</button>
+    </div>
+    <div class="mb" id="mBody"></div>
+  </div>
+</div>
+
+<script id="quote-data" type="application/json">
+[
+["Clarity is a kindness.","講清楚，是一種體貼。"],
+["You don't have to be fluent to be understood.","不必流利，也能讓人聽懂。"],
+["Speak first, polish later.","先開口，再修飾。"],
+["The room rewards the person who says the useful thing.","會議室獎勵的，是講出有用那句話的人。"],
+["Silence is not humility.","沉默不等於謙虛。"],
+["Say the number.","把數字說出來。"],
+["Confidence is preparation wearing a calm face.","自信，是準備好之後的那張臉。"],
+["Being brief is respect.","講得短，是一種尊重。"],
+["Your accent is not the problem — your hedging is.","口音不是問題，猶豫才是。"],
+["Own the decision, not the outcome.","為決定負責，而不是為結果焦慮。"],
+["One clear sentence beats three careful ones.","一句清楚的話，勝過三句小心的話。"],
+["Progress is a sentence you couldn't say last month.","進步，是上個月講不出來的那句話。"],
+["Disagree early. It's cheaper.","早一點反對，成本比較低。"],
+["Ask the dumb question. Everyone needed it.","問那個笨問題吧，其實大家都需要。"],
+["Nobody is grading your grammar. They're listening for your point.","沒有人在打你文法分數，他們在等你的重點。"],
+["Show the trade-off, not the apology.","講取捨，不要講抱歉。"],
+["Slow down. Nobody sounds smart at speed.","講慢一點。沒有人講快會顯得聰明。"],
+["The best update is the one that ends early.","最好的進度報告，是提早結束的那一份。"],
+["You are allowed to take up time.","你有資格佔用會議的時間。"],
+["Fluency is a habit, not a talent.","流利是習慣，不是天分。"],
+["Bad news travels best when you carry it yourself.","壞消息，自己帶過去最好。"],
+["A frame beats a script.","有架構，比背稿有用。"],
+["Say what you'd do, not what could be done.","說你會怎麼做，而不是事情可以怎麼做。"],
+["Every meeting is a rep.","每一場會議，都是一次練習。"],
+["Precision is a form of respect for the listener.","精準，是對聽的人的尊重。"],
+["You'll never feel ready. Speak anyway.","你永遠不會覺得準備好。還是開口。"],
+["Push back on the idea, not the person.","反對想法，不要反對人。"],
+["Close the loop. That's the whole job.","把迴圈收掉——這就是這份工作的全部。"],
+["Short sentences survive translation.","短句子活得下來。"],
+["Today's awkward sentence is next month's default.","今天卡卡的那句話，下個月會變成你的直覺。"],
+["Speak in decisions, not in feelings.","用決定說話，不要用感覺說話。"],
+["The point goes first. Always.","重點放最前面。永遠。"],
+["If it matters, say it twice.","真的重要，就講兩次。"],
+["You don't need permission to be clear.","把話講清楚，不需要別人允許。"],
+["Practice out loud. Reading is not speaking.","出聲練。用讀的不等於會講。"]
+]
+</script>
+
+
+<script>
+(function(){
+"use strict";
+
+var THEMES = {
+  standup:  {en:"Stand-up & status",        zh:"站會與進度回報", day:1},
+  decisions:{en:"Explaining decisions",     zh:"解釋技術決策",   day:2},
+  pushback: {en:"Disagreeing & negotiating",zh:"反對與協商",     day:3},
+  escalate: {en:"Escalation & bad news",    zh:"升級與壞消息",   day:4},
+  running:  {en:"Running the meeting",      zh:"主持會議",       day:5}
+};
+var ORDER = ["standup","decisions","pushback","escalate","running"];
+var GOAL = 60;
+var LS = "englishCoachDone";
+
+function J(id){ try{ return JSON.parse(document.getElementById(id).textContent); }catch(e){ console.error("parse "+id, e); return null; } }
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function el(id){ return document.getElementById(id); }
+
+var QUOTES = J("quote-data") || [["Speak first, polish later.","先開口，再修飾。"]];
+var LESSONS = [];
+
+/* ---- completion state ---- */
+var done = {};
+try { done = JSON.parse(localStorage.getItem(LS) || "{}") || {}; } catch(e){ done = {}; }
+function saveDone(){ try{ localStorage.setItem(LS, JSON.stringify(done)); }catch(e){} }
+function isDone(d){ return !!done[d]; }
+
+/* ---- dates ---- */
+function todayStr(){
+  var n = new Date();
+  return n.getFullYear() + "-" + String(n.getMonth()+1).padStart(2,"0") + "-" + String(n.getDate()).padStart(2,"0");
+}
+function dayIndex(){ return Math.floor(Date.now() / 86400000); }
+var TODAY = todayStr();
+
+/* ---- 每日一句 ---- */
+(function(){
+  var q = QUOTES[dayIndex() % QUOTES.length];
+  el("qEn").textContent = "“" + q[0] + "”";
+  el("qZh").textContent = q[1];
+})();
+
+/* ---- KPI ---- */
+function render(){
+  var total = LESSONS.length;
+  var nDone = LESSONS.filter(function(l){ return isDone(l.date); }).length;
+  var pct = Math.min(100, Math.round(nDone / GOAL * 1000) / 10);
+
+  el("kDone").textContent = nDone;
+  el("kTotal").innerHTML = total + '<span class="unit">堂</span>';
+  el("kPct").textContent = pct + "%";
+  el("pTxt").textContent = nDone + " / " + GOAL + " 堂（" + pct + "%）";
+  el("pFill").style.width = Math.max(pct, 0.6) + "%";
+
+  var t = LESSONS.filter(function(l){ return l.date === TODAY; })[0];
+  if (t) {
+    el("kToday").innerHTML = esc(THEMES[t.theme] ? THEMES[t.theme].zh : t.theme) +
+      '<span class="unit">' + (isDone(t.date) ? "已完成" : "待完成") + '</span>';
+  } else {
+    var wd = new Date().getDay();
+    el("kToday").innerHTML = (wd === 0 || wd === 6)
+      ? '休息日<span class="unit">週末</span>'
+      : '尚未產生<span class="unit">08:00 生成</span>';
+  }
+
+  /* 主題涵蓋度 */
+  var counts = {};
+  ORDER.forEach(function(k){ counts[k] = 0; });
+  LESSONS.forEach(function(l){ if (isDone(l.date) && counts.hasOwnProperty(l.theme)) counts[l.theme]++; });
+  var max = Math.max(4, Math.max.apply(null, ORDER.map(function(k){ return counts[k]; })));
+  el("cov").innerHTML = ORDER.map(function(k){
+    var c = counts[k], th = THEMES[k];
+    var cls = c === 0 ? "zero" : (c <= max/3 ? "weak" : "");
+    var w = c === 0 ? 3 : Math.round(c / max * 100);
+    return '<div class="covrow ' + cls + '">' +
+      '<div class="cn">' + esc(th.zh) + '<small>' + esc(th.en) + '</small></div>' +
+      '<div class="cc">' + c + ' 堂</div>' +
+      '<div class="cbar"><i style="width:' + w + '%"></i></div></div>';
+  }).join("");
+
+  /* 本週規劃 */
+  var now = new Date();
+  var dow = now.getDay(); // 0 Sun
+  var offset = (dow === 0 ? -6 : 1 - dow);
+  var mon = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+  var html = "";
+  for (var i = 0; i < 5; i++) {
+    var d = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + i);
+    var ds = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+    var key = ORDER[i], th = THEMES[key];
+    var les = LESSONS.filter(function(l){ return l.date === ds; })[0];
+    var stat, scls;
+    if (les && isDone(ds)) { stat = "✓ 已完成"; scls = "ok"; }
+    else if (les) { stat = "▸ 可開始"; scls = "rdy"; }
+    else { stat = "— 未產生"; scls = "non"; }
+    html += '<' + (les ? 'button' : 'div') + ' class="day' + (les ? ' has' : '') + (ds === TODAY ? ' today' : '') + '"' +
+      (les ? ' data-date="' + ds + '"' : '') + '>' +
+      '<div class="dw"><span>' + ["MON","TUE","WED","THU","FRI"][i] + '</span><span>' + (d.getMonth()+1) + '/' + d.getDate() + '</span></div>' +
+      '<div class="dt">' + esc(th.zh) + '</div>' +
+      '<div class="dz">' + esc(th.en) + '</div>' +
+      '<div class="dstat ' + scls + '">' + stat + '</div>' +
+      '</' + (les ? 'button' : 'div') + '>';
+  }
+  el("week").innerHTML = html;
+
+  /* 教材庫 */
+  var tb = el("libTable").querySelector("tbody");
+  if (!LESSONS.length) {
+    el("libTable").style.display = "none";
+    el("libEmpty").style.display = "block";
+  } else {
+    el("libTable").style.display = "";
+    el("libEmpty").style.display = "none";
+    tb.innerHTML = LESSONS.map(function(l, i){
+      var th = THEMES[l.theme] || {zh:l.theme, en:""};
+      return '<tr>' +
+        '<td>' + (i+1) + '</td>' +
+        '<td data-l="日期" style="font-weight:600">' + esc(l.date) + ' <span style="color:#8FA0C2;font-weight:400">' + esc(l.weekday || "") + '</span></td>' +
+        '<td data-l="星期" class="hide-sm">' + esc(l.weekday || "") + '</td>' +
+        '<td data-l="主題">' + esc(th.zh) + '</td>' +
+        '<td data-l="重點" style="color:#C9D4E8">' + esc(l.focus || "") + '</td>' +
+        '<td>' + (isDone(l.date)
+            ? '<span class="badge b-ok">已完成</span>'
+            : '<span class="badge b-new">待完成</span>') + '</td>' +
+        '<td style="text-align:right"><button class="rbtn" data-date="' + esc(l.date) + '">開啟教材</button></td>' +
+        '</tr>';
+    }).join("");
+  }
+}
+
+/* ---- modal ---- */
+function open(date){
+  var l = LESSONS.filter(function(x){ return x.date === date; })[0];
+  if (!l) return;
+  var th = THEMES[l.theme] || {zh:l.theme, en:""};
+
+  el("mTitle").innerHTML = 'Daily English — ' + esc(l.date) +
+    ' <span class="chip">' + esc(th.zh) + ' · ' + esc(th.en) + '</span>';
+  el("mSub").textContent = (l.weekday || "") + " · 30 min · " + (l.focus || "");
+
+  var h = "";
+  if (l.lead) h += '<p class="lead">' + l.lead + '</p>';
+
+  /* 1 phrase bank */
+  if (l.phrases && l.phrases.length) {
+    h += '<div class="msect"><span class="b2"></span>1. Warm-up phrase bank <span class="min">5 min</span></div>';
+    h += '<p class="lead">每個 phrase 出聲唸三次，再用自己手上的專案換一個例子講出來。</p>';
+    h += '<table class="ptbl"><thead><tr><th>Phrase</th><th>中文語感</th><th>Example (your work)</th></tr></thead><tbody>';
+    h += l.phrases.map(function(p){
+      return '<tr' + (p.fix ? ' class="fix"' : '') + '>' +
+        '<td class="en">' + esc(p.en) + (p.fix ? '<span class="tag">習慣修正</span><span class="why">（' + esc(p.fix) + '）</span>' : '') + '</td>' +
+        '<td class="gl">' + esc(p.gl) + '</td>' +
+        '<td class="ex">' + esc(p.ex) + '</td></tr>';
+    }).join("");
+    h += '</tbody></table>';
+  }
+
+  /* 2 scenario */
+  if (l.setup || (l.prompts && l.prompts.length)) {
+    h += '<div class="msect"><span class="b2"></span>2. Scenario drill <span class="min">12 min</span></div>';
+    if (l.setup) h += '<div class="setup">' + l.setup + '</div>';
+    (l.prompts || []).forEach(function(p, i){
+      h += '<div class="prompt">' +
+        '<div class="q"><span class="qnum">Prompt ' + (i+1) + '.</span> ' + esc(p.q) + '</div>' +
+        (p.frame ? '<div class="frame"><b>Frame:</b> ' + esc(p.frame) + '</div>' : '') +
+        (p.say ? '<div class="say">' + esc(p.say) + '</div>' : '') +
+        '<details><summary>Model answer</summary><p>' + esc(p.model) + '</p></details>' +
+        '</div>';
+    });
+  }
+
+  /* 3 precision */
+  if (l.fixes && l.fixes.length) {
+    h += '<div class="msect"><span class="b2"></span>3. Precision pass <span class="min">8 min</span></div>';
+    h += '<p class="lead">先自己改，出聲唸出修正版，再看解答與原因。</p><ol class="fixes">';
+    h += l.fixes.map(function(f){
+      return '<li><span class="bad">“' + esc(f.bad) + '”</span>' +
+        '<span class="good">→ ' + esc(f.good) + '</span>' +
+        '<span class="note">' + esc(f.note) + '</span></li>';
+    }).join("");
+    h += '</ol>';
+  }
+
+  /* 4 challenge */
+  if (l.challenge) {
+    h += '<div class="msect"><span class="b2"></span>4. Speaking challenge <span class="min">5 min</span></div>';
+    h += '<div class="challenge">' + l.challenge + '</div>';
+  }
+
+  /* self check */
+  if (l.check && l.check.length) {
+    h += '<div class="msect"><span class="b2"></span>自我檢查</div>';
+    h += '<div class="check"><ol>' + l.check.map(function(c){
+      return '<li>' + esc(c) + '（Yes / No）</li>';
+    }).join("") + '</ol></div>';
+  }
+
+  h += '<div class="mf">' +
+    '<button class="donebtn' + (isDone(l.date) ? ' on' : '') + '" id="doneBtn" data-date="' + esc(l.date) + '">' +
+      (isDone(l.date) ? '✓ 已標記完成（點一下取消）' : '標記這堂為已完成') + '</button>' +
+    '<span class="mfnote">完成狀態存在本機瀏覽器，重新整理不會遺失。</span></div>';
+
+  el("mBody").innerHTML = h;
+  el("mBody").scrollTop = 0;
+  el("ov").classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+function close(){
+  el("ov").classList.remove("on");
+  document.body.style.overflow = "";
+}
+
+document.addEventListener("click", function(e){
+  var t = e.target;
+  if (t.id === "xbtn") { close(); return; }
+  if (t.id === "ov") { close(); return; }
+  if (t.id === "doneBtn") {
+    var d = t.getAttribute("data-date");
+    if (isDone(d)) { delete done[d]; } else { done[d] = new Date().toISOString(); }
+    saveDone();
+    t.classList.toggle("on", isDone(d));
+    t.textContent = isDone(d) ? "✓ 已標記完成（點一下取消）" : "標記這堂為已完成";
+    render();
+    return;
+  }
+  var btn = t.closest ? t.closest("[data-date]") : null;
+  if (btn && btn.id !== "doneBtn") { open(btn.getAttribute("data-date")); }
+});
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") close(); });
+
+function boot(){
+  var bust = "?t=" + Date.now();
+  fetch("lessons/index.json" + bust)
+    .then(function(r){ if(!r.ok) throw new Error("index " + r.status); return r.json(); })
+    .then(function(dates){
+      return Promise.all(dates.map(function(d){
+        return fetch("lessons/" + d + ".json" + bust).then(function(r){ return r.json(); });
+      }));
+    })
+    .then(function(arr){
+      LESSONS = arr.filter(Boolean).sort(function(a,b){ return a.date < b.date ? -1 : 1; });
+    })
+    .catch(function(e){ console.error("lesson load failed", e); })
+    .then(function(){
+      render();
+      console.log("English Coach dashboard ready — " + LESSONS.length + " lessons, today=" + TODAY);
+    });
+}
+boot();
+})();
+</script>
+
+</body>
+</html>
